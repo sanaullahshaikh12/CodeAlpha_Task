@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url(im.jpg) no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .calculator {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 320px;
+        }
+
+        .calculator h1 {
+            margin-bottom: 20px;
+            color: #ffcc00;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .display {
+            width: 100%;
+            height: 50px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            text-align: right;
+            padding: 5px;
+            background: #fff;
+            color: #000;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .buttons button {
+            padding: 15px;
+            font-size: 1.2rem;
+            background: #ffcc00;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .buttons button:hover {
+            background: #ffa500;
+        }
+
+        .buttons button.clear {
+            background: #ff3333;
+            color: #fff;
+        }
+
+        .buttons button.clear:hover {
+            background: #ff0000;
+        }
+
+        .buttons button.operator {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .buttons button.operator:hover {
+            background: #0056b3;
+        }
+
+        .buttons button.extra {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .buttons button.extra:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>Calculator</h1>
+        <input type="text" id="display" class="display" disabled>
+        <div class="buttons">
+            <button onclick="clearDisplay()" class="clear">AC</button>
+            <button onclick="calculatePercentage()" class="extra">%</button>
+            <button onclick="appendToDisplay('/')" class="operator">/</button>
+            <button onclick="appendToDisplay('*')" class="operator">×</button>
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button onclick="appendToDisplay('-')" class="operator">−</button>
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button onclick="appendToDisplay('+')" class="operator">+</button>
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button onclick="calculateResult()" class="extra">=</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="toggleSign()" class="extra">±</button>
+            <button onclick="deleteLast()" class="clear">⌫</button>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+
+        function clearDisplay() {
+            display.value = '';
+        }
+
+        function appendToDisplay(value) {
+            display.value += value;
+        }
+
+        function calculateResult() {
+            try {
+                display.value = eval(display.value);
+            } catch {
+                display.value = 'Error';
+            }
+        }
+
+        function toggleSign() {
+            if (display.value) {
+                display.value = display.value.startsWith('-') ? display.value.slice(1) : '-' + display.value;
+            }
+        }
+
+        function deleteLast() {
+            display.value = display.value.slice(0, -1);
+        }
+
+        function calculatePercentage() {
+            if (display.value) {
+                display.value = parseFloat(display.value) / 100;
+            }
+        }
+
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+            if ((key >= '0' && key <= '9') || ['+', '-', '*', '/', '.', '%'].includes(key)) {
+                appendToDisplay(key);
+            } else if (key === 'Enter') {
+                calculateResult();
+            } else if (key === 'Backspace') {
+                deleteLast();
+            } else if (key === 'Escape') {
+                clearDisplay();
+            }
+        });
+    </script>
+</body>
+</html>
