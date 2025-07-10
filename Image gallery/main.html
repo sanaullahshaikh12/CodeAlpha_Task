@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url(images\ \(2\).jpeg) no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            color: #ffcc00;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .gallery img {
+            width: calc(25% - 10px);
+            cursor: pointer;
+            border: 2px solid #ffcc00;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gallery img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(255, 204, 0, 0.6);
+        }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border: 5px solid #ffcc00;
+            border-radius: 10px;
+        }
+
+        .lightbox span {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #ffcc00;
+            font-size: 40px;
+            cursor: pointer;
+        }
+
+        .lightbox .controls {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .lightbox button {
+            padding: 10px 20px;
+            background-color: #ffcc00;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #000;
+        }
+
+        .lightbox button:hover {
+            background-color: #ffa500;
+            color: #fff;
+        }
+
+        .filters {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .filters button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 10px;
+            background-color: #ffcc00;
+            color: #000;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .filters button:hover {
+            background-color: #ffa500;
+            color: #fff;
+        }
+
+        .filters button.active {
+            background-color: #28a745;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Gallery</h1>
+
+    <div class="filters">
+        <button class="filter-btn active" data-category="all">All</button>
+        <button class="filter-btn" data-category="nature">Nature</button>
+        <button class="filter-btn" data-category="architecture">Architecture</button>
+        <button class="filter-btn" data-category="animals">Animals</button>
+    </div>
+
+    <div class="gallery">
+        <img src="nature1.webp" alt="Nature 1" data-category="nature">
+        <img src="arc1.jpeg" alt="Architecture 1" data-category="architecture">
+        <img src="images.jpeg" alt="Animals 1" data-category="animals">
+        <img src="nature2.jpg" alt="Nature 2" data-category="nature">
+        <img src="arc2.jpeg" alt="Architecture 2" data-category="architecture">
+        <img src="images (1).jpeg" alt="Animals 2" data-category="animals">
+    </div>
+
+    <div class="lightbox" id="lightbox">
+        <span id="close">&times;</span>
+        <img id="lightbox-img" src="" alt="Lightbox">
+        <div class="controls">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const gallery = document.querySelectorAll('.gallery img');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const close = document.getElementById('close');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const prevButton = document.getElementById('prev');
+        const nextButton = document.getElementById('next');
+        
+        let currentIndex = 0;
+        let filteredImages = Array.from(gallery);
+
+        const showLightbox = (index) => {
+            lightboxImg.src = filteredImages[index].src;
+            lightbox.style.display = 'flex';
+        };
+
+        gallery.forEach((img, index) => {
+            img.addEventListener('click', () => {
+                currentIndex = filteredImages.indexOf(img);
+                showLightbox(currentIndex);
+            });
+        });
+
+        close.addEventListener('click', () => {
+            lightbox.style.display = 'none';
+        });
+
+        nextButton.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % filteredImages.length;
+            showLightbox(currentIndex);
+        });
+
+        prevButton.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length;
+            showLightbox(currentIndex);
+        });
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const category = button.getAttribute('data-category');
+
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                filteredImages = category === 'all' 
+                    ? Array.from(gallery)
+                    : Array.from(gallery).filter(img => img.getAttribute('data-category') === category);
+
+                gallery.forEach(img => {
+                    const imgCategory = img.getAttribute('data-category');
+                    img.style.display = (category === 'all' || imgCategory === category) ? 'block' : 'none';
+                });
+
+                if (filteredImages.length > 0) {
+                    currentIndex = 0;
+                    showLightbox(currentIndex);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
